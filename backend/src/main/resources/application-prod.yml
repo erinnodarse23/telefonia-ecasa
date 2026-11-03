@@ -1,0 +1,25 @@
+# ===================================================================
+# PERFIL: prod - producción, estricto
+# Activar con: SPRING_PROFILES_ACTIVE=prod
+#
+# ⚠️ NO carga .env. Las variables DEBEN venir del entorno real
+#    (Docker, systemd, Kubernetes, etc.)
+#    Si falta JWT_SECRET o DB_PASSWORD, la app NO ARRANCA.
+# ===================================================================
+
+spring:
+  cache:
+    caffeine:
+      spec: maximumSize=5000,expireAfterWrite=1h
+
+logging:
+  level:
+    cu.ecasa.api: INFO
+    org.springframework.security: WARN
+    org.springframework.jdbc.core: WARN
+    org.springframework.scheduling: INFO
+
+management:
+  endpoint:
+    health:
+      show-details: when-authorized

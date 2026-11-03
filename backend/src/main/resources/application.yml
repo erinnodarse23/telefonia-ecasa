@@ -1,0 +1,124 @@
+# ===================================================================
+# CONFIGURACIÓN BASE - valores compartidos entre todos los perfiles
+# ===================================================================
+
+spring:
+  application:
+    name: servidor-api-java
+
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+  # ---------- Base de datos PostgreSQL ----------
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:ecasa_telefonica}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 2
+      idle-timeout: 30000
+      connection-timeout: 10000
+      max-lifetime: 1800000
+      validation-timeout: 5000
+      leak-detection-threshold: 20000
+
+  # ---------- Multipart (subida de Excel) ----------
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+      enabled: true
+
+  # ---------- Caché Caffeine ----------
+  cache:
+    type: caffeine
+
+  # ---------- Serialización JSON ----------
+  jackson:
+    time-zone: UTC
+    serialization:
+      write-dates-as-timestamps: false
+      fail-on-empty-beans: false
+    deserialization:
+      fail-on-unknown-properties: false
+      accept-single-value-as-array: true
+
+# ===================================================================
+# SERVIDOR
+# ===================================================================
+server:
+  port: ${PORT:5001}
+  forward-headers-strategy: framework
+  error:
+    include-message: never
+    include-stacktrace: never
+    include-binding-errors: never
+  compression:
+    enabled: true
+    mime-types: application/json,text/html,text/plain,application/xml
+    min-response-size: 1024
+
+  # ⚠️ TODO lo de tomcat va DENTRO de server.tomcat
+  tomcat:
+    # Límite del body POST (equivalente a express.json({ limit: '10mb' }))
+    max-http-form-post-size: 10MB
+    max-swallow-size: 10MB
+    # El access log se gestiona desde AccessLogFilter.java
+
+# ===================================================================
+# APLICACIÓN
+# ===================================================================
+app:
+  cors-origin: ${CORS_ORIGIN:http://localhost:5173,http://localhost:3000}
+  jwt-secret: ${JWT_SECRET}
+  security:
+    token-cleanup:
+      cron: ${TOKEN_CLEANUP_CRON:0 0 * * * *}
+  alerts:
+    evaluation-cron: ${ALERTS_CRON:0 0 */6 * * *}
+
+# ===================================================================
+# SPRINGDOC (Swagger UI)
+# ===================================================================
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    # Path estándar de Springdoc. Internamente redirige a /swagger-ui/index.html
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+    display-request-duration: true
+    persist-authorization: true
+# ===================================================================
+# ACTUATOR
+# ===================================================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true
+  info:
+    env:
+      enabled: true
+
+# ===================================================================
+# LOGGING
+# ===================================================================
+logging:
+  level:
+    root: INFO
+    cu.ecasa.api: INFO
+    org.springframework.security: WARN
+    org.springframework.web: WARN
+    org.springframework.jdbc.core: INFO
+    org.springframework.scheduling: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n"

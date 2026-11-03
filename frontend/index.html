@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="es" translate="no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="google" content="notranslate" />
+    <link rel="icon" type="image/svg+xml" href="/avion-favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Control de Telefonía Móvil | ECASA S.A.</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      (function() {
+        var theme;
+        try { theme = localStorage.getItem('theme'); } catch(e) {}
+        if (theme !== 'dark' && theme !== 'light') theme = 'light';
+        document.body.classList.add(theme);
+      })();
+    </script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
