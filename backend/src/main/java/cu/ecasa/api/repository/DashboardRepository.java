@@ -187,4 +187,76 @@ public class DashboardRepository {
                 uebId, year);
         return rows.isEmpty() ? Map.of("monto", 0) : rows.get(0);
     }
+
+    /**
+     * Consumos mensuales agrupados por UEB (12 filas por UEB, una por mes
+     * con datos; los meses sin consumo no aparecen y el servicio los
+     * rellena con ceros).
+     *
+     * <p>Usa la misma atribución histórica que {@link #findMonthlyTotals}:
+     * el consumo de cada mes se atribuye a la UEB de la asignación activa
+     * al cierre del mes.
+     *
+     * @param year  año a consultar
+     * @param uebId ID de UEB (null para todas)
+     * @return lista de mapas con {@code ueb_id}, {@code mes}, {@code total_voz},
+     *         {@code total_datos}, {@code total_sms}
+     */
+    public List<Map<String, Object>> findConsumosMensualesPorUeb(Integer year, Integer uebId) {
+        String filter = uebId == null ? "" : " AND emp.ueb_id = ?";
+
+        String sql =
+                "SELECT emp.ueb_id, c.mes, "
+                        + "SUM(c.voz_consumido) total_voz, "
+                        + "SUM(c.datos_consumido) total_datos, "
+                        + "SUM(c.sms_consumido) total_sms "
+                        + "FROM consumo c "
+                        + "JOIN equipo e ON e.id = c.equipo_id "
+                        + "JOIN asignacion a ON a.equipo_id = e.id "
+                        + "  AND a.fecha_inicio <= (make_date(c.anio, c.mes, 1) + interval '1 month - 1 day')::date "
+                        + "  AND (a.fecha_fin IS NULL OR a.fecha_fin >= (make_date(c.anio, c.mes, 1) + interval '1 month - 1 day')::date) "
+                        + "JOIN empleado emp ON emp.id = a.empleado_id "
+                        + "WHERE c.anio = ?" + filter
+                        + " GROUP BY emp.ueb_id, c.mes "
+                        + "ORDER BY emp.ueb_id, c.mes";
+
+        return uebId == null
+                ? jdbcTemplate.queryForList(sql, year)
+                : jdbcTemplate.queryForList(sql, year, uebId);
+    }
+
+    /**
+     * Comparativa anual (año actual vs anterior) agrupada por UEB y mes.
+     *
+     * <p>Devuelve hasta 24 filas por UEB (12 del año actual + 12 del anterior,
+     * solo los meses con datos). El servicio rellena con ceros los meses
+     * faltantes.
+     *
+     * @param year  año base (se compara con {@code year - 1})
+     * @param uebId ID de UEB (null para todas)
+     * @return lista de mapas con {@code ueb_id}, {@code anio}, {@code mes},
+     *         {@code total_voz}, {@code total_datos}, {@code total_sms}
+     */
+    public List<Map<String, Object>> findComparativaPorUeb(Integer year, Integer uebId) {
+        String filter = uebId == null ? "" : " AND emp.ueb_id = ?";
+
+        String sql =
+                "SELECT emp.ueb_id, c.anio, c.mes, "
+                        + "SUM(c.voz_consumido) total_voz, "
+                        + "SUM(c.datos_consumido) total_datos, "
+                        + "SUM(c.sms_consumido) total_sms "
+                        + "FROM consumo c "
+                        + "JOIN equipo e ON e.id = c.equipo_id "
+                        + "JOIN asignacion a ON a.equipo_id = e.id "
+                        + "  AND a.fecha_inicio <= (make_date(c.anio, c.mes, 1) + interval '1 month - 1 day')::date "
+                        + "  AND (a.fecha_fin IS NULL OR a.fecha_fin >= (make_date(c.anio, c.mes, 1) + interval '1 month - 1 day')::date) "
+                        + "JOIN empleado emp ON emp.id = a.empleado_id "
+                        + "WHERE c.anio IN (?, ?)" + filter
+                        + " GROUP BY emp.ueb_id, c.anio, c.mes "
+                        + "ORDER BY emp.ueb_id, c.anio, c.mes";
+
+        return uebId == null
+                ? jdbcTemplate.queryForList(sql, year, year - 1)
+                : jdbcTemplate.queryForList(sql, year, year - 1, uebId);
+    }
 }
