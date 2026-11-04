@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,10 +17,10 @@ import cu.ecasa.api.exceptions.ResourceNotFoundException;
 /**
  * Servicio de gestión de consumos individuales.
  *
- * <p><b>Atomicidad:</b> {@link #update} es transaccional para garantizar que
- * el {@code UPDATE consumo} y la posible generación de alertas asociada
- * (que corre en su propia transacción con {@code REQUIRES_NEW}) no dejen
- * un estado inconsistente si falla la generación de alertas.
+ * <p><b>Atomicidad:</b> {@link #update} y {@link #create} son transaccionales
+ * para garantizar que la escritura y la posible generación de alertas
+ * asociada (que corre en su propia transacción con {@code REQUIRES_NEW})
+ * no dejen un estado inconsistente.
  *
  * @see ConsumoRepository
  * @see AlertGenerationService
@@ -28,6 +29,9 @@ import cu.ecasa.api.exceptions.ResourceNotFoundException;
 public class ConsumoService {
 
     private static final Logger log = LoggerFactory.getLogger(ConsumoService.class);
+
+    private static final int ANIO_MIN = 2000;
+    private static final int ANIO_MAX = 2100;
 
     private final ConsumoRepository repository;
     private final EquipoRepository equipoRepository;
@@ -52,6 +56,76 @@ public class ConsumoService {
             throw new ResourceNotFoundException("Equipo no encontrado");
         }
         return repository.findByEquipo(equipoId);
+    }
+
+    /**
+     * Crea un consumo manual.
+     *
+     * <p>Validaciones estrictas:
+     * <ul>
+     *   <li>{@code equipoId}: obligatorio, &gt; 0, debe existir en la BD</li>
+     *   <li>{@code anio}: obligatorio, entre 2000 y 2100</li>
+     *   <li>{@code mes}: obligatorio, entre 1 y 12</li>
+     *   <li>{@code voz}, {@code datos}: opcionales, &ge; 0</li>
+     *   <li>{@code sms}: opcional, entero &ge; 0</li>
+     * </ul>
+     *
+     * <p>Si ya existe un consumo para {@code (equipoId, anio, mes)}, lanza
+     * {@link DataIntegrityViolationException} → el {@code ApiExceptionHandler}
+     * lo mapea a {@code 409 Conflict}.
+     *
+     * @return la fila creada
+     */
+    @Transactional
+    public Map<String, Object> create(Integer equipoId, Integer anio, Integer mes,
+                                      BigDecimal voz, BigDecimal datos, Integer sms) {
+        // --- 1. Equipo ---
+        if (equipoId == null || equipoId <= 0) {
+            throw new IllegalArgumentException("ID de equipo inválido");
+        }
+        if (equipoRepository.findById(equipoId).isEmpty()) {
+            throw new ResourceNotFoundException("Equipo no encontrado");
+        }
+
+        // --- 2. Año ---
+        if (anio == null) {
+            throw new IllegalArgumentException("El año es obligatorio");
+        }
+        if (anio < ANIO_MIN || anio > ANIO_MAX) {
+            throw new IllegalArgumentException(
+                    "El año debe estar entre " + ANIO_MIN + " y " + ANIO_MAX);
+        }
+
+        // --- 3. Mes ---
+        if (mes == null) {
+            throw new IllegalArgumentException("El mes es obligatorio");
+        }
+        if (mes < 1 || mes > 12) {
+            throw new IllegalArgumentException("El mes debe estar entre 1 y 12");
+        }
+
+        // --- 4. Valores ---
+        validateValue(voz, "voz_consumido");
+        validateValue(datos, "datos_consumido");
+        if (sms != null && sms < 0) {
+            throw new IllegalArgumentException("sms_consumido debe ser un número no negativo");
+        }
+
+        // --- 5. Duplicado ---
+        if (repository.existsByEquipoAndPeriodo(equipoId, anio, mes)) {
+            throw new DataIntegrityViolationException(
+                    "Ya existe un consumo para el equipo " + equipoId
+                            + " en el período " + anio + "-" + mes
+                            + ". Use el endpoint de actualización para modificarlo.");
+        }
+
+        // --- 6. Insertar ---
+        Map<String, Object> result = repository.insertOrUpdate(equipoId, anio, mes, voz, datos, sms);
+
+        // --- 7. Reevaluar alertas (no bloqueante) ---
+        reevaluarAlertasTrasActualizacion();
+
+        return result;
     }
 
     /**
