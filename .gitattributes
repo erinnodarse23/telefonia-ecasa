@@ -1,0 +1,30 @@
+# ============================================================
+# .gitattributes — Forzar LF y no convertir archivos críticos
+# ============================================================
+
+# Linux scripts / config que NO deben tener CRLF ni BOM
+*.sh        text eol=lf
+*.conf      text eol=lf
+Dockerfile  text eol=lf
+*.dockerignore text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+
+# Forzar que nginx.conf NUNCA se convierta (evita BOM/CRLF)
+frontend/nginx.conf text eol=lf -text
+
+# Archivos Java / JS / TS / SQL se quedan con autocrlf normal
+*.java      text
+*.js        text
+*.jsx       text
+*.ts        text
+*.tsx       text
+*.sql       text
+
+# Binarios (no tocar)
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.svg       text eol=lf
+*.ico       binary
+*.jar       binary
