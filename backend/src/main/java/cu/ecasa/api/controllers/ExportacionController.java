@@ -17,6 +17,7 @@ import cu.ecasa.api.service.DashboardService;
 import cu.ecasa.api.service.ExportacionService;
 import cu.ecasa.api.service.PdfService;
 import cu.ecasa.api.service.ReporteService;
+import cu.ecasa.api.service.TrazaService;
 
 @RestController
 @RequestMapping("/api/exportar")
@@ -28,9 +29,15 @@ public class ExportacionController {
     private final ReporteService reportes;
     private final DashboardService dashboard;
     private final PdfService pdf;
+    private final TrazaService trazas;
 
-    public ExportacionController(ExportacionService exportacion, ReporteService reportes, DashboardService dashboard, PdfService pdf) {
-        this.exportacion = exportacion; this.reportes = reportes; this.dashboard = dashboard; this.pdf = pdf;
+    public ExportacionController(ExportacionService exportacion, ReporteService reportes,
+                                 DashboardService dashboard, PdfService pdf, TrazaService trazas) {
+        this.exportacion = exportacion;
+        this.reportes = reportes;
+        this.dashboard = dashboard;
+        this.pdf = pdf;
+        this.trazas = trazas;
     }
 
     @GetMapping("/responsables/excel")
@@ -63,8 +70,33 @@ public class ExportacionController {
     public ResponseEntity<byte[]> dashboard(@RequestParam int anio, Authentication authentication) {
         AuthenticatedUser user = (AuthenticatedUser) authentication.getPrincipal();
         Integer uebId = "JefeUnidad".equals(user.rol()) ? user.uebId() : null;
-        byte[] data = exportacion.excel("Dashboard", new String[]{"UEB", "Servicios", "% Datos", "Plan Anual", "Prom. Mensual", "Est. Cierre", "Diferencia", "% Sobregasto"}, dashboard.summary(anio, uebId));
+        byte[] data = exportacion.excel("Dashboard",
+                new String[]{"UEB", "Servicios", "% Datos", "Plan Anual", "Prom. Mensual", "Est. Cierre", "Diferencia", "% Sobregasto"},
+                dashboard.summary(anio, uebId));
         return download(data, "dashboard_" + anio + ".xlsx");
+    }
+
+    /**
+     * PDF del dashboard: tabla de indicadores por UEB.
+     */
+    @GetMapping("/dashboard/pdf")
+    public ResponseEntity<byte[]> dashboardPdf(@RequestParam int anio, Authentication authentication) {
+        AuthenticatedUser user = (AuthenticatedUser) authentication.getPrincipal();
+        Integer uebId = "JefeUnidad".equals(user.rol()) ? user.uebId() : null;
+        byte[] data = pdf.dashboard(dashboard.summary(anio, uebId), "Dashboard", anio);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
+                .header("Content-Disposition", "attachment; filename=dashboard_" + anio + ".pdf").body(data);
+    }
+
+    /**
+     * PDF de trazas de auditoría. Devuelve las últimas {@code limit} trazas.
+     */
+    @GetMapping("/trazas/pdf")
+    public ResponseEntity<byte[]> trazasPdf(@RequestParam(defaultValue = "500") Integer limit) {
+        List<Map<String, Object>> rows = trazas.listarParaPdf(null, null, null, null, null, limit);
+        byte[] data = pdf.trazas(rows, "Trazas de Auditoría");
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
+                .header("Content-Disposition", "attachment; filename=trazas_auditoria.pdf").body(data);
     }
 
     private ResponseEntity<byte[]> download(byte[] data, String filename) {

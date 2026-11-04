@@ -35,11 +35,6 @@ import jakarta.servlet.http.HttpServletRequest;
  * con {@code current transaction is aborted}. Con {@code REQUIRES_NEW} la
  * traza tiene su propia conexión y, si falla, solo revierte la traza.
  *
- * <p><b>Consecuencia de diseño:</b> si la operación de negocio falla después
- * de que la traza haya commiteado, la traza queda registrada aunque el
- * negocio no se completara. Esto es <b>deseable</b>: la auditoría debe
- * reflejar el <i>intento</i> de la acción, no solo el éxito.
- *
  * @see TrazaRepository
  */
 @Service
@@ -53,13 +48,6 @@ public class TrazaService {
         this.repository = repository;
     }
 
-    /**
-     * Registro explícito de traza en transacción independiente.
-     *
-     * <p>El {@code REQUIRES_NEW} garantiza que un fallo aquí no contamina
-     * la transacción del llamador. El {@code try/catch} interno garantiza
-     * que la excepción no se propaga al llamador. Doble red de seguridad.
-     */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void registrar(Integer usuarioId, String accion, String entidad, Integer entidadId,
                           String descripcion, String ip) {
@@ -71,18 +59,10 @@ public class TrazaService {
         }
     }
 
-    /**
-     * Registro automático. Obtiene usuario de {@code SecurityContextHolder}
-     * y IP del {@code RequestContextHolder}.
-     */
     public void registrarAuto(String accion, String entidad, Integer entidadId, String descripcion) {
         registrar(extractAuthenticatedUserId(), accion, entidad, entidadId, descripcion, extractClientIp());
     }
 
-    /**
-     * Registro automático con {@code usuarioId} explícito. Útil cuando el
-     * usuario aún no está en el {@code SecurityContextHolder} (ej: login).
-     */
     public void registrarAutoConUsuario(Integer usuarioId, String accion, String entidad,
                                         Integer entidadId, String descripcion) {
         registrar(usuarioId, accion, entidad, entidadId, descripcion, extractClientIp());
@@ -132,6 +112,23 @@ public class TrazaService {
                 "pagina", safePage,
                 "totalPaginas", (int) Math.ceil((double) total / safeLimit),
                 "limite", safeLimit);
+    }
+
+    /**
+     * Devuelve las últimas N trazas (sin paginación) para generar el PDF.
+     *
+     * @param usuarioId filtro por usuario (null = todos)
+     * @param accion    filtro por acción (null = todas)
+     * @param entidad   filtro por entidad (null = todas)
+     * @param desde     fecha desde (null = sin límite)
+     * @param hasta     fecha hasta (null = sin límite)
+     * @param limit     máximo de filas a devolver
+     * @return lista de mapas con las columnas de traza
+     */
+    public List<Map<String, Object>> listarParaPdf(Integer usuarioId, String accion, String entidad,
+                                                   String desde, String hasta, int limit) {
+        int safeLimit = Math.max(1, Math.min(limit, 10000));
+        return repository.find(usuarioId, accion, entidad, desde, hasta, safeLimit, 0);
     }
 
     public byte[] exportar(Integer usuarioId, String accion, String entidad, String desde, String hasta) {
