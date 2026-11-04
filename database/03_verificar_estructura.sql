@@ -1,4 +1,4 @@
-﻿-- ============================================================
+-- ============================================================
 -- Script: 03_verificar_estructura.sql
 -- Verificación de solo lectura (SELECT) del esquema esperado.
 -- Devuelve TRUE/FALSE por elemento. No modifica la BD.

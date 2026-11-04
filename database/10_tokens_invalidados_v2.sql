@@ -1,4 +1,4 @@
-﻿-- ============================================================
+-- ============================================================
 -- 10_tokens_invalidados_v2.sql
 -- Reemplaza el schema de tokens_invalidados por el nuevo del Node:
 --   - id SERIAL PK

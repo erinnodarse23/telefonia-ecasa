@@ -1,4 +1,4 @@
-﻿-- ============================================================
+-- ============================================================
 -- 11_indices_parciales.sql
 -- Impone a nivel BD las validaciones que antes solo estaban en código:
 --   - Un equipo NO puede tener 2 asignaciones activas

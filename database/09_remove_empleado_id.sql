@@ -1,4 +1,4 @@
-﻿-- ============================================================
+-- ============================================================
 -- 09_remove_empleado_id.sql
 -- Migra usuario.empleado_id -> usuario.ueb_id y luego DROPs empleado_id.
 -- Idempotente: se puede ejecutar múltiples veces.

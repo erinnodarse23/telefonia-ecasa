@@ -1,4 +1,4 @@
-﻿-- ============================================================
+-- ============================================================
 -- 05_add_unique_consumo.sql
 -- Agrega UNIQUE(equipo_id, anio, mes) a la tabla consumo
 -- Idempotente: se puede ejecutar múltiples veces
