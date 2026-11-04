@@ -36,13 +36,17 @@ public class PlanRepository {
     }
 
     public boolean hasActiveByEquipo(Integer equipoId) {
-        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM plan WHERE equipo_id = ? AND fecha_fin IS NULL", Integer.class, equipoId);
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM plan WHERE equipo_id = ? AND fecha_fin IS NULL",
+                Integer.class, equipoId);
         return count != null && count > 0;
     }
 
-    public Map<String, Object> create(Integer equipoId, Integer voz, Integer datos, Integer sms, BigDecimal cuota, LocalDate fechaInicio) {
+    public Map<String, Object> create(Integer equipoId, Integer voz, Integer datos, Integer sms,
+                                      BigDecimal cuota, LocalDate fechaInicio) {
         return jdbcTemplate.queryForMap(
-                "INSERT INTO plan (equipo_id, voz_plan, datos_plan, sms_plan, cuota, fecha_inicio) VALUES (?, ?, ?, ?, ?, ?) RETURNING *",
+                "INSERT INTO plan (equipo_id, voz_plan, datos_plan, sms_plan, cuota, fecha_inicio) "
+                        + "VALUES (?, ?, ?, ?, ?, ?) RETURNING *",
                 equipoId, voz, datos, sms, cuota, fechaInicio);
     }
 
@@ -55,6 +59,21 @@ public class PlanRepository {
 
     public Map<String, Object> finalizePlan(Integer id, LocalDate fechaFin) {
         return jdbcTemplate.queryForMap("UPDATE plan SET fecha_fin = ? WHERE id = ? RETURNING *", fechaFin, id);
+    }
+
+    /**
+     * Cierra el plan activo de un equipo (si existe) con la fecha indicada.
+     * Usado por {@link cu.ecasa.api.service.PlanService} para el auto-cierre
+     * antes de crear un plan nuevo.
+     *
+     * @param equipoId ID del equipo
+     * @param fechaFin fecha de cierre (típicamente ayer)
+     * @return número de filas actualizadas (0 o 1)
+     */
+    public int finalizarPlanActivo(Integer equipoId, LocalDate fechaFin) {
+        return jdbcTemplate.update(
+                "UPDATE plan SET fecha_fin = ? WHERE equipo_id = ? AND fecha_fin IS NULL",
+                fechaFin, equipoId);
     }
 
     public void delete(Integer id) {
