@@ -25,6 +25,42 @@ public class PdfService {
                 new String[]{"numero_linea", "marca", "modelo", "estado_fisico", "observaciones"});
     }
 
+    /**
+     * PDF del dashboard: tabla de indicadores por UEB.
+     *
+     * <p>Reutiliza el mismo formato de tabla que {@link #responsables} y
+     * {@link #equipos}. Los valores se toman del {@code summary()} de
+     * {@link DashboardService}, que ya calcula plan anual, promedios y
+     * porcentaje de sobregasto.
+     *
+     * @param rows  filas del {@code dashboard.summary(anio, uebId)}
+     * @param title título del PDF
+     * @param anio  año (para el título secundario)
+     * @return bytes del PDF
+     */
+    public byte[] dashboard(List<Map<String, Object>> rows, String title, Integer anio) {
+        String fullTitle = title + (anio == null ? "" : " - " + anio);
+        return tablePdf(fullTitle,
+                new String[]{"UEB", "Servicios", "% Datos", "Plan Anual", "Prom. Mensual", "Est. Cierre", "% Sobregasto"},
+                rows,
+                new String[]{"ueb_nombre", "cantidad_servicios", "pct_lineas_con_datos",
+                        "plan_anual", "promedio_real_mensual", "estimado_cierre", "pct_sobregasto"});
+    }
+
+    /**
+     * PDF de trazas de auditoría.
+     *
+     * @param rows  filas del {@code TrazaService.listar(...).get("datos")}
+     * @param title título del PDF
+     * @return bytes del PDF
+     */
+    public byte[] trazas(List<Map<String, Object>> rows, String title) {
+        return tablePdf(title,
+                new String[]{"Fecha", "Usuario", "Rol", "Accion", "Entidad", "Descripcion", "IP"},
+                rows,
+                new String[]{"fecha", "usuario_login", "usuario_rol", "accion", "entidad", "descripcion", "ip"});
+    }
+
     private byte[] tablePdf(String title, String[] headers, List<Map<String, Object>> rows, String[] keys) {
         try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
             Document document = new Document();

@@ -6,7 +6,7 @@ import ThemeToggle from './ThemeToggle';
 import SidebarItem from './SidebarItem';
 import ConfirmModal from './ConfirmModal';
 import api from '../services/api';
-import { FiHome, FiGrid, FiUsers, FiSmartphone, FiUserCheck, FiFileText, FiUploadCloud, FiBarChart2, FiShield, FiSettings, FiClock, FiChevronLeft, FiChevronRight, FiBell } from 'react-icons/fi';
+import { FiHome, FiGrid, FiUsers, FiSmartphone, FiUserCheck, FiFileText, FiUploadCloud, FiBarChart2, FiShield, FiSettings, FiClock, FiChevronLeft, FiChevronRight, FiBell, FiActivity, FiDollarSign, FiTrendingUp } from 'react-icons/fi';
 
 function Layout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -97,6 +97,9 @@ function Layout() {
 
   if (isAdmin || isComunicaciones || isJefe) {
     menuItems.push({ to: '/dashboard', label: 'Dashboard', icon: FiHome });
+    menuItems.push({ to: '/monitoreo', label: 'Monitoreo', icon: FiActivity });
+    menuItems.push({ to: '/presupuesto', label: 'Presupuesto', icon: FiDollarSign });
+    menuItems.push({ to: '/tendencias', label: 'Tendencias', icon: FiTrendingUp });
   }
 
   if (isAdmin || isComunicaciones) {
@@ -106,7 +109,7 @@ function Layout() {
       { to: '/equipos', label: 'Equipos', icon: FiSmartphone },
       { to: '/asignaciones', label: 'Asignaciones', icon: FiUserCheck },
       { to: '/planes', label: 'Planes', icon: FiFileText },
-      { to: '/consumo-historico', label: 'Consumo Histórico', icon: FiClock },
+      { to: '/consumo-historico', label: 'Consumo HistÃƒÂ³rico', icon: FiClock },
       { to: '/carga', label: 'Importar Consumo', icon: FiUploadCloud },
     );
   }
@@ -119,7 +122,7 @@ function Layout() {
   if (isAdmin) {
     menuItems.push({ to: '/usuarios', label: 'Usuarios', icon: FiShield });
     menuItems.push({ to: '/trazas', label: 'Trazas', icon: FiClock });
-    menuItems.push({ to: '/configuracion', label: 'Parámetros', icon: FiSettings });
+    menuItems.push({ to: '/configuracion', label: 'ParÃƒÂ¡metros', icon: FiSettings });
   }
 
   const userInitial = (usuario?.login || 'U')[0].toUpperCase();
@@ -144,7 +147,7 @@ function Layout() {
                 key={item.to}
                 to={item.to}
                 text={item.label}
-                icon={Icon ? <Icon /> : '•'}
+                icon={Icon ? <Icon /> : 'Ã¢â‚¬Â¢'}
                 collapsed={sidebarCollapsed}
               />
             );
@@ -158,7 +161,7 @@ function Layout() {
             <button className="sidebar-toggle" onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
               {sidebarCollapsed ? <FiChevronRight size={18} /> : <FiChevronLeft size={18} />}
             </button>
-            <h2 className="header-title">ECASA Telefonía</h2>
+            <h2 className="header-title">ECASA TelefonÃƒÂ­a</h2>
           </div>
           <div className="header-actions">
             <div className="alertas-dropdown" ref={alertasRef}>
@@ -221,7 +224,7 @@ function Layout() {
                   </div>
                   <div className="user-dropdown-divider" />
                   <button className="user-dropdown-logout" onClick={handleLogout}>
-                    Cerrar Sesión
+                    Cerrar SesiÃƒÂ³n
                   </button>
                 </div>
               )}
@@ -238,8 +241,8 @@ function Layout() {
         onClose={() => setLimpiarModalOpen(false)}
         onConfirm={handleConfirmLimpiar}
         title="Limpiar notificaciones"
-        message="¿Estás seguro de que deseas limpiar todas las notificaciones?"
-        confirmText="Sí, limpiar todo"
+        message="Ã‚Â¿EstÃƒÂ¡s seguro de que deseas limpiar todas las notificaciones?"
+        confirmText="SÃƒÂ­, limpiar todo"
         variant="warning"
       />
     </div>

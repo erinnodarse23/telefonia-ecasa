@@ -1,6 +1,7 @@
 package cu.ecasa.api.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,10 @@ import cu.ecasa.api.exceptions.ResourceNotFoundException;
 
 /**
  * Servicio de gestión de planes tarifarios con DTOs y transacciones.
+ *
+ * <p><b>Comportamiento al crear:</b> si el equipo ya tiene un plan activo,
+ * se cierra automáticamente con fecha de ayer antes de crear el nuevo
+ * (decisión de negocio alineada con el backend Node).
  *
  * @see PlanRepository
  * @see PlanMapper
@@ -55,8 +60,12 @@ public class PlanService {
         if (request.fechaInicio() == null) {
             throw new IllegalArgumentException("La fecha de inicio es obligatoria");
         }
+
+        // Auto-cierre del plan anterior si existe (decisión de negocio).
+        // Se cierra con fecha de ayer para no solapar con el nuevo plan.
         if (repository.hasActiveByEquipo(request.equipoId())) {
-            throw new IllegalArgumentException("El equipo ya tiene un plan activo");
+            LocalDate ayer = LocalDate.now().minusDays(1);
+            repository.finalizarPlanActivo(request.equipoId(), ayer);
         }
 
         Map<String, Object> result = repository.create(

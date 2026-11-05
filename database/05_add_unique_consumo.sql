@@ -1,19 +1,15 @@
 -- ============================================================
 -- 05_add_unique_consumo.sql
 -- Agrega UNIQUE(equipo_id, anio, mes) a la tabla consumo
+-- Idempotente: se puede ejecutar múltiples veces
 -- ============================================================
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uq_consumo_equipo_mes') THEN
+    DELETE FROM consumo a USING consumo b
+      WHERE a.id > b.id AND a.equipo_id = b.equipo_id AND a.anio = b.anio AND a.mes = b.mes;
+    ALTER TABLE consumo ADD CONSTRAINT uq_consumo_equipo_mes UNIQUE (equipo_id, anio, mes);
+  END IF;
+END $$;
 
--- 1. Eliminar duplicados (conserva la fila con menor id para cada combinación)
-DELETE FROM consumo c1
-USING consumo c2
-WHERE c1.id > c2.id
-  AND c1.equipo_id = c2.equipo_id
-  AND c1.anio = c2.anio
-  AND c1.mes = c2.mes;
-
--- 2. Agregar constraint UNIQUE
-ALTER TABLE consumo
-ADD CONSTRAINT uq_consumo_equipo_mes UNIQUE (equipo_id, anio, mes);
-
--- 3. Verificar
-SELECT 'UNIQUE constraint agregada correctamente' AS resultado;
+SELECT 'uq_consumo_equipo_mes OK' AS resultado;

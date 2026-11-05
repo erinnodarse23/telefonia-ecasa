@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * Filtro de rate limiting por IP con 3 niveles, equivalente a los limiters
+ * Filtro de rate limiting por IP con 4 niveles, equivalente a los limiters
  * de {@code express-rate-limit} en el backend Node.
  *
  * <p><b>Niveles:</b>
@@ -27,6 +27,7 @@ import jakarta.servlet.http.HttpServletResponse;
  *   <li><b>Login</b> ({@code /api/auth/login}, {@code /api/usuarios/login}):
  *       10 req/min por IP</li>
  *   <li><b>Carga</b> ({@code /api/carga}): 10 req/min por IP</li>
+ *   <li><b>Exportación</b> ({@code /api/exportar}): 20 req/min por IP</li>
  *   <li><b>Global</b> ({@code /api/**}): 2000 req/15min por IP</li>
  * </ol>
  *
@@ -46,6 +47,9 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     private static final long CARGA_WINDOW_MS = 60_000L;
     private static final int CARGA_MAX_REQ = 10;
+
+    private static final long EXPORT_WINDOW_MS = 60_000L;
+    private static final int EXPORT_MAX_REQ = 20;
 
     private static final long GLOBAL_WINDOW_MS = 15 * 60_000L;
     private static final int GLOBAL_MAX_REQ = 2000;
@@ -87,6 +91,10 @@ public class RateLimitFilter extends OncePerRequestFilter {
             return new Limit("carga", CARGA_WINDOW_MS, CARGA_MAX_REQ,
                     "Demasiadas cargas de archivos, intente más tarde");
         }
+        if (path.startsWith("/api/exportar")) {
+            return new Limit("export", EXPORT_WINDOW_MS, EXPORT_MAX_REQ,
+                    "Demasiadas solicitudes de exportación, intente más tarde");
+        }
         if (path.startsWith("/api/")) {
             return new Limit("global", GLOBAL_WINDOW_MS, GLOBAL_MAX_REQ,
                     "Demasiadas solicitudes, intente más tarde");
@@ -121,7 +129,6 @@ public class RateLimitFilter extends OncePerRequestFilter {
     private static final class Window {
         private volatile long windowStart;
         private final AtomicInteger count;
-
         private Window(long windowStart, AtomicInteger count) {
             this.windowStart = windowStart;
             this.count = count;
