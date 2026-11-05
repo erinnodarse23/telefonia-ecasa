@@ -1,4 +1,4 @@
-﻿# 🏢 CTM | ECASA S.A.
+# 🏢 CTM | ECASA S.A.
 
 ### Sistema de Control de Telefonía Móvil
 
@@ -368,7 +368,7 @@ MIT — ver [LICENSE](LICENSE) para detalles.
 
 ## 👤 Autor
 
-**Erinn Odarse** ([@erinnodarse23](https://github.com/erinnodarse23))
+**Erin Nodarse** ([@erinnodarse23](https://github.com/erinnodarse23))
 
 - 🐙 GitHub: [erinnodarse23](https://github.com/erinnodarse23)
 - 💼 Portafolio: [erinnodarse.vercel.app](https://erinnodarse.vercel.app)
