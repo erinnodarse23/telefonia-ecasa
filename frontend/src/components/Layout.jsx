@@ -109,7 +109,7 @@ function Layout() {
       { to: '/equipos', label: 'Equipos', icon: FiSmartphone },
       { to: '/asignaciones', label: 'Asignaciones', icon: FiUserCheck },
       { to: '/planes', label: 'Planes', icon: FiFileText },
-      { to: '/consumo-historico', label: 'Consumo HistÃƒÂ³rico', icon: FiClock },
+      { to: '/consumo-historico', label: 'Consumo Histórico', icon: FiClock },
       { to: '/carga', label: 'Importar Consumo', icon: FiUploadCloud },
     );
   }
@@ -122,7 +122,7 @@ function Layout() {
   if (isAdmin) {
     menuItems.push({ to: '/usuarios', label: 'Usuarios', icon: FiShield });
     menuItems.push({ to: '/trazas', label: 'Trazas', icon: FiClock });
-    menuItems.push({ to: '/configuracion', label: 'ParÃƒÂ¡metros', icon: FiSettings });
+    menuItems.push({ to: '/configuracion', label: 'Parámetros', icon: FiSettings });
   }
 
   const userInitial = (usuario?.login || 'U')[0].toUpperCase();
@@ -161,7 +161,7 @@ function Layout() {
             <button className="sidebar-toggle" onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
               {sidebarCollapsed ? <FiChevronRight size={18} /> : <FiChevronLeft size={18} />}
             </button>
-            <h2 className="header-title">ECASA TelefonÃƒÂ­a</h2>
+            <h2 className="header-title">ECASA Telefonía</h2>
           </div>
           <div className="header-actions">
             <div className="alertas-dropdown" ref={alertasRef}>
@@ -224,7 +224,7 @@ function Layout() {
                   </div>
                   <div className="user-dropdown-divider" />
                   <button className="user-dropdown-logout" onClick={handleLogout}>
-                    Cerrar SesiÃƒÂ³n
+                    Cerrar Sesión
                   </button>
                 </div>
               )}
@@ -241,8 +241,8 @@ function Layout() {
         onClose={() => setLimpiarModalOpen(false)}
         onConfirm={handleConfirmLimpiar}
         title="Limpiar notificaciones"
-        message="Ã‚Â¿EstÃƒÂ¡s seguro de que deseas limpiar todas las notificaciones?"
-        confirmText="SÃƒÂ­, limpiar todo"
+        message="Ã‚Â¿Estás seguro de que deseas limpiar todas las notificaciones?"
+        confirmText="Sí, limpiar todo"
         variant="warning"
       />
     </div>
