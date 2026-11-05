@@ -2,9 +2,8 @@ name: Keep-Alive Render Backend
 
 on:
   schedule:
-    # Cada 10 minutos (UTC)
     - cron: '*/10 * * * *'
-  workflow_dispatch:  # Permite ejecutarlo manualmente desde la pestaña Actions
+  workflow_dispatch:
 
 jobs:
   ping:
