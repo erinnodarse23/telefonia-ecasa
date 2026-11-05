@@ -7,7 +7,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import Layout from './components/Layout';
 import PageSkeleton from './components/PageSkeleton';
 import ProtectedRoute from './components/ProtectedRoute';
-import { Login, Dashboard, UEB, Empleados, Equipos, Asignaciones, Planes, CargaConsumo, ConsumoHistorico, Reportes, Usuarios, Configuracion, Trazas, Alertas } from './utils/pagePrefetch';
+import { Login, Dashboard, UEB, Empleados, Equipos, Asignaciones, Planes, CargaConsumo, ConsumoHistorico, Reportes, Usuarios, Configuracion, Trazas, Alertas, Monitoreo, Presupuesto, Tendencias } from './utils/pagePrefetch';
 
 function App() {
   const { loading, token } = useAuth();
@@ -40,6 +40,9 @@ function App() {
               <Route path="/usuarios" element={<Usuarios />} />
               <Route path="/configuracion" element={<Configuracion />} />
               <Route path="/trazas" element={<Trazas />} />
+              <Route path="/monitoreo" element={<Monitoreo />} />
+              <Route path="/presupuesto" element={<Presupuesto />} />
+              <Route path="/tendencias" element={<Tendencias />} />
               <Route path="/" element={<Navigate to="/dashboard" />} />
             </Route>
           </Routes>
