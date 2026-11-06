@@ -24,17 +24,17 @@ import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Filtro que escribe un access log HTTP en formato Apache Combined,
- * equivalente a {@code morgan('dev')} del backend Node.
+ * equivalente a Morgan (formato dev).
  *
- * <p><b>Decisiones de diseño:</b>
+ * <p><b>Decisiones de diseÃ±o:</b>
  * <ul>
  *   <li>Usa {@link ZonedDateTime} en lugar de {@link java.time.LocalDateTime}
- *       porque el patrón {@code Z} (offset) requiere una zona horaria.
- *       {@code LocalDateTime} no tiene offset → lanzaría
+ *       porque el patrÃ³n {@code Z} (offset) requiere una zona horaria.
+ *       {@code LocalDateTime} no tiene offset â†’ lanzarÃ­a
  *       {@code UnsupportedTemporalTypeException}.</li>
- *   <li>{@link Locale#ENGLISH} explícito para que el nombre del mes siempre
- *       sea en inglés ({@code Nov}), no traducido ({@code nov}) — coherente
- *       con el formato Apache estándar.</li>
+ *   <li>{@link Locale#ENGLISH} explÃ­cito para que el nombre del mes siempre
+ *       sea en inglÃ©s ({@code Nov}), no traducido ({@code nov}) â€” coherente
+ *       con el formato Apache estÃ¡ndar.</li>
  *   <li>{@code catch (Exception)} (no solo {@code IOException}) para que
  *       CUALQUIER fallo al escribir el log (NPE, IllegalState, etc.) se loguee
  *       a WARN y NUNCA se propague al cliente. Un fallo de logging no debe
@@ -50,7 +50,7 @@ public class AccessLogFilter extends OncePerRequestFilter {
 
     private static final Logger log = LoggerFactory.getLogger(AccessLogFilter.class);
 
-    /** Formato Apache Combined: 30/Nov/2026:07:15:40 -0500 (offset obligatorio → ZonedDateTime). */
+    /** Formato Apache Combined: 30/Nov/2026:07:15:40 -0500 (offset obligatorio â†’ ZonedDateTime). */
     private static final DateTimeFormatter DATE_FORMAT =
             DateTimeFormatter.ofPattern("dd/MMM/yyyy:HH:mm:ss Z", Locale.ENGLISH);
 
@@ -86,7 +86,7 @@ public class AccessLogFilter extends OncePerRequestFilter {
     }
 
     /**
-     * Escribe el access log. Cualquier excepción se captura y loguea a WARN,
+     * Escribe el access log. Cualquier excepciÃ³n se captura y loguea a WARN,
      * pero NUNCA se propaga al cliente.
      */
     private void writeAccessLogSafely(HttpServletRequest request,
@@ -94,7 +94,7 @@ public class AccessLogFilter extends OncePerRequestFilter {
                                        long durationMs) {
         try {
             String ip = extractClientIp(request);
-            // ✅ ZonedDateTime en lugar de LocalDateTime (tiene offset para el patrón 'Z')
+            // âœ… ZonedDateTime en lugar de LocalDateTime (tiene offset para el patrÃ³n 'Z')
             String timestamp = ZonedDateTime.now().format(DATE_FORMAT);
             String method = request.getMethod();
             String uri = request.getRequestURI();
@@ -110,7 +110,7 @@ public class AccessLogFilter extends OncePerRequestFilter {
                     size = Long.parseLong(contentLength);
                 }
             } catch (NumberFormatException ignored) {
-                // header inválido, se deja size en 0
+                // header invÃ¡lido, se deja size en 0
             }
 
             String line = String.format(
@@ -122,7 +122,7 @@ public class AccessLogFilter extends OncePerRequestFilter {
                     StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 
         } catch (Exception e) {
-            // ⚠️ catch (Exception) no (IOException): cualquier RuntimeException
+            // âš ï¸ catch (Exception) no (IOException): cualquier RuntimeException
             // (NPE, UnsupportedTemporalTypeException, IllegalState) se captura.
             // NUNCA propagar al cliente. WARN para visibilidad en el log del backend.
             log.warn("AccessLogFilter: no se pudo escribir el access log: {}", e.getMessage());
@@ -137,7 +137,7 @@ public class AccessLogFilter extends OncePerRequestFilter {
             return (comma > 0 ? forwarded.substring(0, comma) : forwarded).trim();
         }
         String remote = request.getRemoteAddr();
-        // Cosmético: comprimir IPv6 localhost "0:0:0:0:0:0:0:1" → "::1"
+        // CosmÃ©tico: comprimir IPv6 localhost "0:0:0:0:0:0:0:1" â†’ "::1"
         if ("0:0:0:0:0:0:0:1".equals(remote)) return "::1";
         if ("0:0:0:0:0:0:0:0".equals(remote)) return "::";
         return remote;

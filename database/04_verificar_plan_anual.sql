@@ -1,14 +1,14 @@
 -- ============================================================
--- Script: 04_verificar_migracion_plan_anual.sql
--- Descripción: Verifica que la migración de PLAN_ANUAL desde
---              configuracion → plan_anual se realizó correctamente.
--- Idempotente: se puede ejecutar múltiples veces.
+-- Script: 04_verificar_plan_anual.sql
+-- DescripciÃ³n: Verifica que la migraciÃ³n de PLAN_ANUAL desde
+--              configuracion â†’ plan_anual se realizÃ³ correctamente.
+-- Idempotente: se puede ejecutar mÃºltiples veces.
 -- ============================================================
 
 -- ============================================================
--- 1. Total de registros en plan_anual por año
+-- 1. Total de registros en plan_anual por aÃ±o
 -- ============================================================
-SELECT '1. Registros en plan_anual por año' AS " ";
+SELECT '1. Registros en plan_anual por aÃ±o' AS " ";
 
 SELECT anio,
        COUNT(*)                              AS total_planes,
@@ -18,9 +18,9 @@ GROUP BY anio
 ORDER BY anio;
 
 -- ============================================================
--- 2. Comparación: configuracion vs plan_anual
+-- 2. ComparaciÃ³n: configuracion vs plan_anual
 -- ============================================================
-SELECT '2. Comparación configuracion vs plan_anual' AS " ";
+SELECT '2. ComparaciÃ³n configuracion vs plan_anual' AS " ";
 
 WITH
 planes_en_config AS (
@@ -73,8 +73,8 @@ SELECT '4. Resumen final' AS " ";
 SELECT
     CASE
         WHEN (SELECT COUNT(*) FROM plan_anual) > 0
-        THEN 'Migración completada. plan_anual tiene ' || COUNT(*)::TEXT || ' registros.'
-        ELSE 'ADVERTENCIA: plan_anual está vacía.'
+        THEN 'MigraciÃ³n completada. plan_anual tiene ' || COUNT(*)::TEXT || ' registros.'
+        ELSE 'ADVERTENCIA: plan_anual estÃ¡ vacÃ­a.'
     END AS resultado
 FROM plan_anual;
 

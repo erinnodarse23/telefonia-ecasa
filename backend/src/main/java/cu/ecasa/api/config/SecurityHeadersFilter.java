@@ -13,10 +13,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * Filtro que añade cabeceras de seguridad HTTP equivalentes a {@code helmet()}
- * de Express (Node.js).
+ * Filtro que aÃ±ade cabeceras de seguridad HTTP equivalentes a {@code helmet()}
+ * de rate limiting HTTP.
  *
- * <p>Se ejecuta con prioridad más alta que los filtros de seguridad de Spring
+ * <p>Se ejecuta con prioridad mÃ¡s alta que los filtros de seguridad de Spring
  * para que TODAS las respuestas (incluidos 4xx/5xx) lleven los headers.
  *
  * @see cu.ecasa.api.config.SecurityConfig

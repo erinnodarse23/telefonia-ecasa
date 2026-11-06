@@ -18,11 +18,11 @@ import cu.ecasa.api.repository.PlanRepository;
 import cu.ecasa.api.exceptions.ResourceNotFoundException;
 
 /**
- * Servicio de gestión de planes tarifarios con DTOs y transacciones.
+ * Servicio de gestiÃ³n de planes tarifarios con DTOs y transacciones.
  *
  * <p><b>Comportamiento al crear:</b> si el equipo ya tiene un plan activo,
- * se cierra automáticamente con fecha de ayer antes de crear el nuevo
- * (decisión de negocio alineada con el backend Node).
+ * se cierra automÃ¡ticamente con fecha de ayer antes de crear el nuevo
+ * (decisiÃ³n de negocio alineada con el backend Java).
  *
  * @see PlanRepository
  * @see PlanMapper
@@ -61,7 +61,7 @@ public class PlanService {
             throw new IllegalArgumentException("La fecha de inicio es obligatoria");
         }
 
-        // Auto-cierre del plan anterior si existe (decisión de negocio).
+        // Auto-cierre del plan anterior si existe (decisiÃ³n de negocio).
         // Se cierra con fecha de ayer para no solapar con el nuevo plan.
         if (repository.hasActiveByEquipo(request.equipoId())) {
             LocalDate ayer = LocalDate.now().minusDays(1);
@@ -98,7 +98,7 @@ public class PlanService {
     public PlanResponse finalizePlan(Integer id, FinalizePlanRequest request) {
         PlanResponse plan = findById(id);
         if (plan.fechaFin() != null) {
-            throw new IllegalArgumentException("El plan ya está finalizado");
+            throw new IllegalArgumentException("El plan ya estÃ¡ finalizado");
         }
         if (request.fechaFin() == null) {
             throw new IllegalArgumentException("La fecha de fin es obligatoria");

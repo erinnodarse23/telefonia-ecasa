@@ -1,12 +1,12 @@
 -- ============================================================
 -- 10_tokens_invalidados_v2.sql
--- Reemplaza el schema de tokens_invalidados por el nuevo del Node:
+-- Reemplaza el schema de tokens_invalidados por el nuevo schema:
 --   - id SERIAL PK
 --   - token_jti VARCHAR(255) NOT NULL UNIQUE
---   - invalidado_en TIMESTAMP (auditoría)
+--   - invalidado_en TIMESTAMP (auditorÃ­a)
 --   - expires_at TIMESTAMP
--- Idempotente con DROP+CREATE (los tokens revocados son efímeros).
--- ⚠️ APLICAR DESPUÉS de verificar que el código Java actual sigue funcionando
+-- Idempotente con DROP+CREATE (los tokens revocados son efÃ­meros).
+-- âš ï¸ APLICAR DESPUÃ‰S de verificar que el cÃ³digo Java actual sigue funcionando
 -- ============================================================
 DROP TABLE IF EXISTS tokens_invalidados CASCADE;
 

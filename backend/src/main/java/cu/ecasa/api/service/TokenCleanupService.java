@@ -9,19 +9,19 @@ import org.springframework.transaction.annotation.Transactional;
 import cu.ecasa.api.repository.RevokedTokenRepository;
 
 /**
- * Servicio de limpieza periódica de tokens JWT revocados.
+ * Servicio de limpieza periÃ³dica de tokens JWT revocados.
  *
- * <p>Cada vez que un usuario hace logout o es desactivado, su token se añade
- * a la tabla {@code tokens_invalidados} con su fecha de expiración original.
+ * <p>Cada vez que un usuario hace logout o es desactivado, su token se aÃ±ade
+ * a la tabla {@code tokens_invalidados} con su fecha de expiraciÃ³n original.
  * Esta tabla crece indefinidamente si no se limpia.
  *
- * <p>Este servicio elimina los tokens cuya expiración natural ya pasó,
- * manteniendo la tabla pequeña y las consultas del {@code JwtAuthenticationFilter}
- * rápidas.
+ * <p>Este servicio elimina los tokens cuya expiraciÃ³n natural ya pasÃ³,
+ * manteniendo la tabla pequeÃ±a y las consultas del {@code JwtAuthenticationFilter}
+ * rÃ¡pidas.
  *
  * <p><b>Frecuencia:</b> cada hora ({@code 0 0 * * * *}), alineado con el
- * backend Node original que usaba {@code setInterval(..., 60*60*1000)}.
- * Configurable vía la propiedad {@code app.security.token-cleanup.cron}.
+ * que ejecutaba la limpieza periódicamente.
+ * Configurable vÃ­a la propiedad {@code app.security.token-cleanup.cron}.
  *
  * @see RevokedTokenRepository
  * @see cu.ecasa.api.security.JwtAuthenticationFilter
@@ -38,15 +38,15 @@ public class TokenCleanupService {
     }
 
     /**
-     * Elimina los tokens revocados cuya expiración natural ya pasó.
+     * Elimina los tokens revocados cuya expiraciÃ³n natural ya pasÃ³.
      *
      * <p>Un token con {@code expires_at < now} es rechazado por
-     * {@code JwtService.parse()} de todas formas, así que no necesita
+     * {@code JwtService.parse()} de todas formas, asÃ­ que no necesita
      * permanecer en la tabla de revocados.
      *
-     * <p>La ejecución es transaccional. Los errores se loguean pero no
-     * se propagan (el job se reintentará automáticamente en la próxima
-     * ejecución programada).
+     * <p>La ejecuciÃ³n es transaccional. Los errores se loguean pero no
+     * se propagan (el job se reintentarÃ¡ automÃ¡ticamente en la prÃ³xima
+     * ejecuciÃ³n programada).
      */
     @Scheduled(cron = "${app.security.token-cleanup.cron:0 0 * * * *}")
     @Transactional
@@ -57,7 +57,7 @@ public class TokenCleanupService {
             if (deleted > 0) {
                 log.info("TokenCleanupService: eliminados {} tokens revocados expirados", deleted);
             } else {
-                log.debug("TokenCleanupService: no había tokens expirados para limpiar");
+                log.debug("TokenCleanupService: no habÃ­a tokens expirados para limpiar");
             }
         } catch (Exception ex) {
             log.error("TokenCleanupService: error durante la limpieza de tokens", ex);

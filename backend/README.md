@@ -1,6 +1,6 @@
 # ECASA API Java
 
-Backend Spring Boot en migracion desde `servidor-api` Node.js/Express.
+Backend Spring Boot en Java 17 + Spring Boot 3.4.
 
 ## Estructura de paquetes
 
@@ -41,7 +41,7 @@ La API escucha por defecto en `http://localhost:5000/api`.
 - Health: `GET /api/health`
 - Swagger: `http://localhost:5000/api/docs`
 
-Durante la migracion, `servidor-api` Node.js permanece como backend de respaldo.
+Durante la desarrollo, `backend` Java permanece como backend de respaldo.
 
 ## Validar
 

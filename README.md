@@ -326,7 +326,7 @@ Trade-off: si el negocio falla después de que la traza commiteó, la traza qued
 ## 📝 Roadmap
 
 ### ✅ Completado
-- [x] Migración completa Node.js → Java Spring Boot
+- [x] Backend Java 17 + Spring Boot 3.4
 - [x] Autenticación JWT + captcha + rate limiting
 - [x] 14 controllers REST documentados con Swagger
 - [x] Módulo de Monitoreo con semáforos

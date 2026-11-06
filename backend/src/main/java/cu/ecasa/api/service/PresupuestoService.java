@@ -10,22 +10,22 @@ import org.springframework.stereotype.Service;
 import cu.ecasa.api.dto.response.PresupuestoResponse;
 
 /**
- * Servicio del módulo de presupuesto anual por UEB.
+ * Servicio del mÃ³dulo de presupuesto anual por UEB.
  *
  * <p>Reutiliza {@link DashboardService#summary(Integer, Integer)} para
- * obtener el plan anual asignado y el consumo acumulado del año. La lógica
- * de negocio aquí es:
+ * obtener el plan anual asignado y el consumo acumulado del aÃ±o. La lÃ³gica
+ * de negocio aquÃ­ es:
  * <ul>
  *   <li>Mapear los campos del dashboard a los del presupuesto
- *       ({@code plan_anual → asignado}, {@code total_consumido → ejecutado})</li>
- *   <li>Calcular disponible y porcentaje de ejecución</li>
- *   <li>Asignar el semáforo de estado</li>
+ *       ({@code plan_anual â†’ asignado}, {@code total_consumido â†’ ejecutado})</li>
+ *   <li>Calcular disponible y porcentaje de ejecuciÃ³n</li>
+ *   <li>Asignar el semÃ¡foro de estado</li>
  * </ul>
  *
  * <p><b>Nota sobre transacciones:</b> {@link #setAsignado} NO es
- * {@code @Transactional} a propósito. Si falla la verificación de alertas
- * posterior, el presupuesto ya quedó guardado (comportamiento igual al
- * backend Node original).
+ * {@code @Transactional} a propÃ³sito. Si falla la verificaciÃ³n de alertas
+ * posterior, el presupuesto ya quedÃ³ guardado (comportamiento igual al
+ * original).
  *
  * @see DashboardService
  * @see ConfiguracionService
@@ -52,7 +52,7 @@ public class PresupuestoService {
     /**
      * Devuelve el presupuesto anual por UEB.
      *
-     * @param anio  año a consultar
+     * @param anio  aÃ±o a consultar
      * @param uebId ID de UEB (null = todas)
      * @return lista de {@link PresupuestoResponse} por UEB
      */
@@ -80,7 +80,7 @@ public class PresupuestoService {
     }
 
     /**
-     * Actualiza el presupuesto anual de una UEB y reevalúa las alertas.
+     * Actualiza el presupuesto anual de una UEB y reevalÃºa las alertas.
      *
      * <p>El orden es:
      * <ol>
@@ -88,10 +88,10 @@ public class PresupuestoService {
      *   <li>Verifica y genera alertas de presupuesto (70%, 85%, 100%)</li>
      * </ol>
      *
-     * <p>Si la verificación falla, el presupuesto ya está guardado; el error
-     * se propaga al cliente (comportamiento igual al Node).
+     * <p>Si la verificaciÃ³n falla, el presupuesto ya estÃ¡ guardado; el error
+     * se propaga al cliente (por diseño).
      *
-     * @param anio     año del presupuesto
+     * @param anio     aÃ±o del presupuesto
      * @param uebId    ID de la UEB
      * @param asignado monto anual asignado (>= 0)
      * @return fila de presupuesto actualizada
@@ -103,7 +103,7 @@ public class PresupuestoService {
                 .filter(r -> r.uebId().equals(uebId))
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException(
-                        "No se pudo recuperar el presupuesto recién guardado"));
+                        "No se pudo recuperar el presupuesto reciÃ©n guardado"));
     }
 
     private String calcularEstado(BigDecimal asignado, BigDecimal porcentaje) {

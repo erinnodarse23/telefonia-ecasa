@@ -27,7 +27,7 @@ class EcasaApiApplicationTests {
     }
 
     @Test
-    void healthIsPublicAndKeepsNodeContract() throws Exception {
+    void healthIsPublicAndReturnsExpectedContract() throws Exception {
         mockMvc.perform(get("/api/health"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("{\"status\":\"ok\",\"message\":\"Servidor funcionando\"}"));

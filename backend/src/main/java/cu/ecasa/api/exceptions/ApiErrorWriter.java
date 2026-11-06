@@ -17,11 +17,11 @@ import jakarta.servlet.http.HttpServletResponse;
  * <p>Se usa desde dos lugares:
  * <ul>
  *   <li>{@code SecurityConfig} (pre-filtros de seguridad: 401, 403)</li>
- *   <li>{@code ApiExceptionHandler} (handlers de excepciones de aplicación)</li>
+ *   <li>{@code ApiExceptionHandler} (handlers de excepciones de aplicaciÃ³n)</li>
  * </ul>
  *
  * <p>Garantiza un formato uniforme {@code {"error": "...", "status": N}}
- * que el frontend consume sin cambios entre backend Node y Java.
+ * que el frontend consume.
  */
 public final class ApiErrorWriter {
 
@@ -35,7 +35,7 @@ public final class ApiErrorWriter {
      * Escribe una respuesta de error JSON en el {@link HttpServletResponse}.
      *
      * @param response respuesta HTTP a la que se escribe
-     * @param status   código HTTP (401, 403, 400, 404, 500...)
+     * @param status   cÃ³digo HTTP (401, 403, 400, 404, 500...)
      * @param message  mensaje legible para el usuario
      * @throws IOException si falla la escritura al cliente
      */

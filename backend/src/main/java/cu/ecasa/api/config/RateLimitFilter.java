@@ -20,18 +20,18 @@ import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Filtro de rate limiting por IP con 4 niveles, equivalente a los limiters
- * de {@code express-rate-limit} en el backend Node.
+ * de rate limiting por IP.
  *
  * <p><b>Niveles:</b>
  * <ol>
  *   <li><b>Login</b> ({@code /api/auth/login}, {@code /api/usuarios/login}):
  *       10 req/min por IP</li>
  *   <li><b>Carga</b> ({@code /api/carga}): 10 req/min por IP</li>
- *   <li><b>Exportación</b> ({@code /api/exportar}): 20 req/min por IP</li>
+ *   <li><b>ExportaciÃ³n</b> ({@code /api/exportar}): 20 req/min por IP</li>
  *   <li><b>Global</b> ({@code /api/**}): 2000 req/15min por IP</li>
  * </ol>
  *
- * <p><b>Nota:</b> rate limiter en memoria. Para producción con múltiples
+ * <p><b>Nota:</b> rate limiter en memoria. Para producciÃ³n con mÃºltiples
  * instancias, migrar a Redis o Bucket4j con backend distribuido.
  *
  * @see SecurityHeadersFilter
@@ -85,19 +85,19 @@ public class RateLimitFilter extends OncePerRequestFilter {
     private Limit chooseLimit(String path) {
         if (path.equals("/api/auth/login") || path.equals("/api/usuarios/login")) {
             return new Limit("login", LOGIN_WINDOW_MS, LOGIN_MAX_REQ,
-                    "Demasiados intentos de inicio de sesión, intente más tarde");
+                    "Demasiados intentos de inicio de sesiÃ³n, intente mÃ¡s tarde");
         }
         if (path.startsWith("/api/carga")) {
             return new Limit("carga", CARGA_WINDOW_MS, CARGA_MAX_REQ,
-                    "Demasiadas cargas de archivos, intente más tarde");
+                    "Demasiadas cargas de archivos, intente mÃ¡s tarde");
         }
         if (path.startsWith("/api/exportar")) {
             return new Limit("export", EXPORT_WINDOW_MS, EXPORT_MAX_REQ,
-                    "Demasiadas solicitudes de exportación, intente más tarde");
+                    "Demasiadas solicitudes de exportaciÃ³n, intente mÃ¡s tarde");
         }
         if (path.startsWith("/api/")) {
             return new Limit("global", GLOBAL_WINDOW_MS, GLOBAL_MAX_REQ,
-                    "Demasiadas solicitudes, intente más tarde");
+                    "Demasiadas solicitudes, intente mÃ¡s tarde");
         }
         return null;
     }

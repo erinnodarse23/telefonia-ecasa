@@ -4,15 +4,15 @@ import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;
 
 /**
- * Utilidad de sanitización XSS equivalente a {@code utils/sanitize.js} del
- * backend Node.
+ * Utilidad de sanitizaciÃ³n XSS equivalente a {@code utils/sanitize.js} del
+ * backend Java.
  *
- * <p>Usa OWASP Java HTML Sanitizer con una política estricta: elimina
+ * <p>Usa OWASP Java HTML Sanitizer con una polÃ­tica estricta: elimina
  * <b>todas</b> las etiquetas HTML y conserva solo el texto plano. Replica
  * exactamente el comportamiento de
- * {@code DOMPurify.sanitize(value, { ALLOWED_TAGS: [] })} en Node.
+ * de sanitización XSS por defecto.
  *
- * <p><b>Campos sanitizables por defecto</b> (mismos que el backend Node):
+ * <p><b>Campos sanitizables por defecto</b> (por defecto):
  * {@code descripcion}, {@code observaciones}, {@code nombre}, {@code cargo},
  * {@code departamento}, {@code marca}, {@code modelo},
  * {@code estado_equipo_entrega}, {@code estado_equipo_devolucion}.
@@ -25,7 +25,7 @@ import org.owasp.html.PolicyFactory;
 public final class XssSanitizer {
 
     /**
-     * Política estricta: sin etiquetas HTML permitidas, solo texto plano.
+     * PolÃ­tica estricta: sin etiquetas HTML permitidas, solo texto plano.
      *
      * <p>Equivalente a {@code ALLOWED_TAGS: []} de DOMPurify. Todo tag HTML
      * es eliminado, pero el contenido textual se conserva.
